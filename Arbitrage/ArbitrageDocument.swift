@@ -9,31 +9,47 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 extension UTType {
-    static var exampleText: UTType {
-        UTType(importedAs: "com.example.plain-text")
+    static var atSave: UTType {
+        UTType(exportedAs: "com.qbcps.ATSave", conformingTo: .json)
     }
 }
 
-struct ArbitrageDocument: FileDocument {
-    var text: String
+class ArbitrageDocument: ReferenceFileDocument {
+    typealias Snapshot = World
 
-    init(text: String = "Hello, world!") {
-        self.text = text
+    @Published var world: VMWorld
+
+    init(with world: World) {
+        self.world = VMWorld(from: world)
     }
 
-    static var readableContentTypes: [UTType] { [.exampleText] }
+    init() {
+        self.world = VMWorld()
+    }
 
-    init(configuration: ReadConfiguration) throws {
-        guard let data = configuration.file.regularFileContents,
-              let string = String(data: data, encoding: .utf8)
-        else {
+    static var readableContentTypes: [UTType] { [.atSave] }
+
+    required init(configuration: ReadConfiguration) throws {
+        guard let data = configuration.file.regularFileContents else {
             throw CocoaError(.fileReadCorruptFile)
         }
-        text = string
+        let decodedWorld = try JSONDecoder().decode(World.self, from: data)
+
+        world = VMWorld(from: decodedWorld)
+    }
+
+    func snapshot(contentType: UTType) throws -> Snapshot {
+        return world.snapshot()
     }
     
-    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
-        let data = text.data(using: .utf8)!
+    func fileWrapper(snapshot: Snapshot, configuration: WriteConfiguration) throws -> FileWrapper {
+        let data = try JSONEncoder().encode(snapshot)
         return .init(regularFileWithContents: data)
+    }
+}
+
+extension ArbitrageDocument {
+    static func example() -> ArbitrageDocument {
+        return ArbitrageDocument(with: World.example())
     }
 }
