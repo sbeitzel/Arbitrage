@@ -16,3 +16,28 @@ while goods are limited to sublight speeds. I also like to contrast this with th
 were the transports of both information and goods, but by mid-century there were steam engines and telegraphs.
 
 Anyhow. This project is my playground for noodling around with information and goods exchange.
+
+## Initial Implementation
+
+First off, we'll make something really simple. A market has its list of prices and those prices don't change. We'll start
+off with a world in which there are ten markets and the prices of goods are all just random. The markets will be sprinkled
+around the world vaguely randomly, and the player starts out in the first one generated.
+
+### Basic Gameplay
+
+A player starts off a young trader in some town. They have a small amount of capital, either in the form of cash or
+in some goods. They buy and sell goods in their town, then ultimately transport the goods to some other town and try
+to turn a profit. Long term, there will be different transports, and all kinds of complications. But to start out,
+we'll be keeping track of the turn number, the player's cash balance, and their inventory of goods in town(s). The player
+also has a ledger and every time an information packet arrives in the same town as the player, the ledger gets updated
+with the news.
+
+## Trade
+
+Goods and information travel between markets, but they don't just teleport. They have to travel along routes, and that
+travel takes time. Ultimately, I think I want some kind of map, perhaps with terrain that could impact the kinds of
+transport that get used and how long travel takes.
+
+To start off, however, I'll make it stupid simple. Travel takes constant time based only on distance and every market
+has a route to every other market (it's a fully connected weighted graph where the edge weight equals the distance). This
+means that to start off with, I don't need to build a graph at all.

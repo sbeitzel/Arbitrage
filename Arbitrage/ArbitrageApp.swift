@@ -10,8 +10,11 @@ import SwiftUI
 @main
 struct ArbitrageApp: App {
     var body: some Scene {
-        DocumentGroup(newDocument: ArbitrageDocument()) { file in
-            ContentView(document: file.$document)
-        }
+        DocumentGroup(
+            newDocument: { ArbitrageDocument(with: World.example()) },
+            editor: { file in
+                ArbitrageView(document: file.document)
+            }
+        )
     }
 }
